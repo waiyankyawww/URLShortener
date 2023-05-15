@@ -25,4 +25,4 @@ const getKeyByValue = (map, searchValue) => {
   return keys;
 };
 
-export default router;
+export default { router, getKeyByValue };

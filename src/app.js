@@ -12,7 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/", indexRouter);
-// app.use("/api", urlsRouter);
+app.use("/api", urlsRouter);
+app.use("/api", deleteRouter);
 
 const port = 3000;
 app.listen(port, () => {
