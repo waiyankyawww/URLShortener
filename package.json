@@ -2,14 +2,14 @@
   "name": "urlshortener",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node app.js"
+    "dev": "node src/app.js"
   },
   "repository": {
-    "type": "module",
-    "url": "git+https://github.com/waiyankyawww/URLShortener.git"
+    "type": "module"
   },
   "author": "",
   "license": "ISC",

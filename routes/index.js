@@ -1,14 +1,13 @@
 import express from "express";
 
-import Url from "../models/Url";
+import hashMap from "./urls.js";
 
 const router = express.Router();
 
 router.get("/:urlId", async (req, res) => {
   try {
     const urlId = req.params.urlId;
-
-    const url = Url.findOne({ urlId });
+    hashMap.get(urlId);
 
     if (url) {
       await Url.updateOne(

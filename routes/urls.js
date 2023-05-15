@@ -1,14 +1,15 @@
 import express from "express";
 import { nanoid } from "nanoid";
-import Url from "../models/Url.js";
-import { validateUrl } from "../utils/utils.js";
 import dotenv from "dotenv";
+
+import { validateUrl } from "../utils/utils.js";
 dotenv.config({ path: "../config/.env" });
 
 const router = express.Router();
+const hashMap = new Map();
 
 router.post("/short", async (req, res) => {
-  const { origUrl } = req.body;
+  const origUrl = req.body;
   const base = process.env.BASE;
 
   // generate short url
@@ -16,21 +17,19 @@ router.post("/short", async (req, res) => {
 
   if (validateUrl(origUrl)) {
     try {
-      const url = Url.findOne({ origUrl });
-      if (!url) {
+      // const url = Url.findOne({ origUrl });
+      const hasUrl = hashMap.has(origUrl);
+      if (hasUrl === false) {
         const shortUrl = `${base}/${urlId}`;
 
-        url = new Url({
-          origUrl,
-          shortUrl,
-          urlId,
-          date: new Date(),
-        });
+        hashMap.set(origUrl, shortUrl);
 
-        await url.save();
-        res.json(url);
+        // await url.save();
+        // res.json(url);
+        res.json(hashMap.get(origUrl));
       }
-      res.json(url);
+
+      res.json(hashMap.get(origUrl));
     } catch (error) {
       console.log(error);
       res.status(500).json("Server Error");
@@ -40,5 +39,6 @@ router.post("/short", async (req, res) => {
   }
 });
 
-// module.export = router;
-export default router;
+module.export = ("urlRouter", { router, hashMap });
+
+// export default module("urlsRouter", router);
