@@ -2,7 +2,7 @@ import express from "express";
 
 import hashMap from "./urls.js";
 
-const router = express.Router();
+export const router = express.Router();
 
 router.get("/:urlId", async (req, res) => {
   const urlId = req.params.urlId;
@@ -13,7 +13,7 @@ router.get("/:urlId", async (req, res) => {
 });
 
 // define a function to get keys by value
-const getKeyByValue = (map, searchValue) => {
+export const getKeyByValue = (map, searchValue) => {
   const keys = [];
   const base = process.env.BASE;
   const shortUrl = `${base}/${searchValue}`;
@@ -25,4 +25,4 @@ const getKeyByValue = (map, searchValue) => {
   return keys;
 };
 
-export default { router, getKeyByValue };
+export default router;

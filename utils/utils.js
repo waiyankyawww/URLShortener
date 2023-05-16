@@ -10,7 +10,7 @@
 export const validateUrl = (value) => {
   const regex =
     /^(?:(?:https?|ftp):\/\/)?(?:\S+(?::\S*)?@)?(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-5])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-4])){3}(?::\d{2,5})?(?:[/?#]\S*)?$/i;
-  if (!regex.match(value)) {
+  if (!regex.test(value)) {
     return false;
   }
   return true;

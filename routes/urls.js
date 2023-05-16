@@ -5,8 +5,8 @@ import dotenv from "dotenv";
 import { validateUrl } from "../utils/utils.js";
 dotenv.config({ path: "../config/.env" });
 
-const router = express.Router();
-const hashMap = new Map();
+export const router = express.Router();
+export const hashMap = new Map();
 
 router.post("/short", async (req, res) => {
   const origUrl = req.body;
@@ -14,13 +14,16 @@ router.post("/short", async (req, res) => {
 
   // generate short url
   const urlId = nanoid(); // nanoid(8) will generate uniqueId with length of 8
+  console.log("this is the urlId" + urlId);
 
   if (validateUrl(origUrl)) {
     try {
       // const url = Url.findOne({ origUrl });
       const hasUrl = hashMap.has(origUrl);
+      console.log(hasUrl);
       if (hasUrl === false) {
         const shortUrl = `${base}/${urlId}`;
+        console.log(shortUrl);
 
         hashMap.set(origUrl, shortUrl);
 
@@ -39,6 +42,7 @@ router.post("/short", async (req, res) => {
   }
 });
 
-module.export = ("urlRouter", { router, hashMap });
+// export default { router, hashMap };
+export default router;
 
 // export default module("urlsRouter", router);
