@@ -1,16 +1,23 @@
 import express from "express";
 import dotenv from "dotenv";
 
-import hashMap from "./urls.js";
+import { hashMap } from "./urls.js";
+import { getKeyByValue } from "./index.js";
 
-dotenv.config({ path: "../config/.env" });
+dotenv.config();
 
 export const router = express.Router();
 
-router.get("/delete", async (req, res) => {
-  const url = req.body;
+router.delete("/:urlId", async (req, res) => {
+  const urlId = req.params.urlId;
+  const key = getKeyByValue(hashMap, urlId);
 
-  hashMap.delete(url);
+  console.log("urlId to delete => " + urlId);
+  // const responseObject = {
+  //   singleValue,
+  //   hashMap: Array.from(hashMap.entries()),
+  // };
+  hashMap.delete(key);
   res.status(200).json({ message: "deleted successfully" });
 });
 
