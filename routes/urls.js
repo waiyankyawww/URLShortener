@@ -12,7 +12,6 @@ const base = process.env.BASE;
 router.post("/", async (req, res) => {
   const body = req.body;
   const origUrl = body.origUrl;
-  console.log("this is from the body " + JSON.stringify(body));
   console.log("this is origUrl from the body " + origUrl);
 
   const urlId = nanoid(); // nanoid(8) will generate uniqueId with length of 8
