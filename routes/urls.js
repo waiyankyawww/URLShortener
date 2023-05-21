@@ -10,8 +10,6 @@ export const hashMap = new Map();
 const base = process.env.BASE;
 
 router.post("/", async (req, res) => {
-  const values = Object.values(hashMap);
-  console.log(`this is the hashMap => ${values}`);
   const body = req.body;
   const origUrl = body.origUrl;
   console.log("this is from the body " + JSON.stringify(body));
