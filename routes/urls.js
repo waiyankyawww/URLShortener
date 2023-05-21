@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { nanoid } from "nanoid";
 import dotenv from "dotenv";
+import redis from "redis";
+import util from "util";
 
 import { validateUrl } from "../utils/utils.js";
 dotenv.config();
@@ -8,10 +10,10 @@ dotenv.config();
 export const router = Router();
 export const hashMap = new Map();
 const base = process.env.BASE;
+const client = redis.createClient();
+const redisKey = process.env.REDISKEY;
 
 router.post("/", async (req, res) => {
-  const values = Object.values(hashMap);
-  console.log(`this is the hashMap => ${values}`);
   const body = req.body;
   const origUrl = body.origUrl;
   console.log("this is from the body " + JSON.stringify(body));
@@ -34,6 +36,18 @@ router.post("/", async (req, res) => {
         console.log("this is the hashmap stored => " + hashMap.get(origUrl));
         // await url.save();
         // res.json(url);
+        const hashMapString = JSON.stringify(hashMap);
+
+        // bind and strong to the Redis
+        const setAsync = util.promisify(client.set).bind(client);
+
+        try {
+          await setAsync(redisKey, hashMapString);
+          console.log("HashMap stored in Redis successfully!");
+        } catch (error) {
+          console.error("Error storing HashMap in Redis:", error);
+        }
+        //
 
         const singleValue = hashMap.get(origUrl);
 
