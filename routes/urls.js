@@ -1,35 +1,73 @@
-import express from "express";
+import { Router } from "express";
 import { nanoid } from "nanoid";
 import dotenv from "dotenv";
+import redis from "redis";
+import util from "util";
 
 import { validateUrl } from "../utils/utils.js";
-dotenv.config({ path: "../config/.env" });
+dotenv.config();
 
-const router = express.Router();
-const hashMap = new Map();
+export const router = Router();
+export const hashMap = new Map();
+const base = process.env.BASE;
+const client = redis.createClient();
+const redisKey = process.env.REDISKEY;
 
-router.post("/short", async (req, res) => {
-  const origUrl = req.body;
-  const base = process.env.BASE;
+router.post("/", async (req, res) => {
+  const body = req.body;
+  const origUrl = body.origUrl;
+  console.log("this is origUrl from the body " + origUrl);
 
-  // generate short url
   const urlId = nanoid(); // nanoid(8) will generate uniqueId with length of 8
+  console.log("this is the urlId" + JSON.stringify(urlId));
 
   if (validateUrl(origUrl)) {
     try {
       // const url = Url.findOne({ origUrl });
       const hasUrl = hashMap.has(origUrl);
+      console.log(`has url in hashmap =>  ${hasUrl}`);
       if (hasUrl === false) {
         const shortUrl = `${base}/${urlId}`;
+        console.log(`this is the shortUrl => ${shortUrl}`);
 
         hashMap.set(origUrl, shortUrl);
 
+        console.log("this is the hashmap stored => " + hashMap.get(origUrl));
         // await url.save();
         // res.json(url);
-        res.json(hashMap.get(origUrl));
-      }
+        const hashMapString = JSON.stringify(hashMap);
 
-      res.json(hashMap.get(origUrl));
+        // bind and strong to the Redis
+        const setAsync = util.promisify(client.set).bind(client);
+
+        try {
+          await setAsync(redisKey, hashMapString);
+          console.log("HashMap stored in Redis successfully!");
+        } catch (error) {
+          console.error("Error storing HashMap in Redis:", error);
+        }
+        //
+
+        const singleValue = hashMap.get(origUrl);
+
+        const responseObject = {
+          singleValue,
+          hashMap: Array.from(hashMap.entries()),
+        };
+
+        res.send(JSON.stringify(responseObject));
+        // res.json(hashMap.get(origUrl));
+      } else {
+        console.log("the url is already stored => " + hashMap.get(origUrl));
+        const singleValue = hashMap.get(origUrl);
+        const responseObject = {
+          singleValue,
+          hashMap: Array.from(hashMap.entries()),
+        };
+        res.send(JSON.stringify(responseObject));
+
+        // res.json(hashMap.get(origUrl));
+      }
     } catch (error) {
       console.log(error);
       res.status(500).json("Server Error");
@@ -37,8 +75,14 @@ router.post("/short", async (req, res) => {
   } else {
     res.status(400).json("invalid Original Url");
   }
+  //
+  for (const value of hashMap.values()) {
+    console.log("values of hashMap => " + value);
+  }
+  return hashMap;
 });
 
-module.export = ("urlRouter", { router, hashMap });
+// export default { router, hashMap };
+export default router;
 
 // export default module("urlsRouter", router);
